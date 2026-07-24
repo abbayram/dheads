@@ -1,0 +1,69 @@
+---
+const {
+  item,
+  mode = 'card',
+  showSlot = false,
+  eager = false,
+  class: className = ''
+} = Astro.props;
+
+const style = `--object:${item.colour};--object-accent:${item.accent};--object-seed:${item.variant};`;
+---
+
+<div
+  class:list={['sculpture-object', `sculpture-object--${mode}`, `variant-${item.variant}`, className]}
+  style={style}
+  data-object
+  aria-label={`${item.title}, ${item.year}`}
+>
+  <div class="object-shadow" aria-hidden="true"></div>
+
+  {item.mainImage ? (
+    <img
+      class="object-photo"
+      src={item.mainImage}
+      alt={item.title}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+    />
+  ) : (
+    <div class="object-form" aria-hidden="true">
+      <span class="object-halo"></span>
+      <span class="object-crown">
+        <i></i><i></i><i></i>
+      </span>
+      <span class="object-head">
+        <span class="object-face">
+          <i class="eye eye-a"></i>
+          <i class="eye eye-b"></i>
+          <i class="mouth"></i>
+        </span>
+      </span>
+      <span class="object-neck"></span>
+      <span class="object-body">
+        <i class="body-mark mark-a"></i>
+        <i class="body-mark mark-b"></i>
+      </span>
+      <span class="object-base"></span>
+    </div>
+  )}
+
+  {showSlot && (
+    <span class:list={['model-slot', item.modelUrl && 'model-slot--ready']}>
+      <span>GLB / 3D</span>
+      <strong>
+        {item.modelUrl ? (
+          <>
+            <span class="copy-de">SCAN GELADEN</span>
+            <span class="copy-en">SCAN LOADED</span>
+          </>
+        ) : (
+          <>
+            <span class="copy-de">SLOT VORBEREITET</span>
+            <span class="copy-en">SLOT PREPARED</span>
+          </>
+        )}
+      </strong>
+    </span>
+  )}
+</div>

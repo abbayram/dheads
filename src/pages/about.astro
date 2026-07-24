@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import SculptureObject from '../components/SculptureObject.astro';
+import { fallbackSculptures } from '../data/sculptures.js';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const totem = fallbackSculptures[24];
+---
+
+<Base
+  route="/about"
+  title="About — dickheads"
+  description="dickheads is a sculptural collaboration by SAKAT and KINAM in Berlin."
+>
+  <section class="about-hero">
+    <div class="eyebrow">
+      <span class="copy-de">DIE BETEILIGTEN</span>
+      <span class="copy-en">THE RESPONSIBLE PARTIES</span>
+    </div>
+    <h1>SAKAT<br /><i>×</i> KINAM</h1>
+    <div class="about-object">
+      <SculptureObject item={totem} mode="about" />
+    </div>
+    <p class="serif-intro">
+      <span class="copy-de">Zwei Berliner Künstler. Dreißig Figuren. Ein bemerkenswert hartnäckiger Einfall.</span>
+      <span class="copy-en">Two Berlin artists. Thirty figures. One remarkably persistent idea.</span>
+    </p>
+  </section>
+
+  <section class="about-copy">
+    <div class="about-index">01 / THE COLLECTIVE</div>
+    <div class="about-columns">
+      <h2>
+        <span class="copy-de">NICHT ALLES, WAS AUF EINEM SOCKEL STEHT, VERDIENT RESPEKT.</span>
+        <span class="copy-en">NOT EVERYTHING ON A PLINTH DESERVES RESPECT.</span>
+      </h2>
+      <div>
+        <p>
+          <span class="copy-de">dickheads ist die gemeinsame Objektarbeit von SAKAT und KINAM. Ausgangspunkt sind Charaktere, Typen und Autoritäten, denen wir im Alltag lieber aus dem Weg gehen würden.</span>
+          <span class="copy-en">dickheads is the shared object practice of SAKAT and KINAM. It begins with characters, types and authorities we would rather avoid in daily life.</span>
+        </p>
+        <p>
+          <span class="copy-de">Die Arbeiten entstehen in Berlin: vom Entwurf über Form und Oberfläche bis zur letzten unnötig sorgfältigen Geste. Satire ist dabei kein Dekor, sondern Material.</span>
+          <span class="copy-en">The works are made in Berlin: from drawing and form to surface and the final unnecessarily careful gesture. Satire is not decoration here; it is material.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="process">
+    <header>
+      <div class="eyebrow">PROCESS / BERLIN</div>
+      <h2>
+        <span class="copy-de">SO KOMMT DAS<br />PROBLEM IN DIE WELT.</span>
+        <span class="copy-en">HOW THE PROBLEM<br />ENTERS THE WORLD.</span>
+      </h2>
+    </header>
+    <ol>
+      <li>
+        <span>01</span>
+        <h3>
+          <span class="copy-de">BEOBACHTEN</span>
+          <span class="copy-en">OBSERVE</span>
+        </h3>
+        <p>
+          <span class="copy-de">Jemand benimmt sich. Wir machen Notizen.</span>
+          <span class="copy-en">Someone behaves. We take notes.</span>
+        </p>
+      </li>
+      <li>
+        <span>02</span>
+        <h3>
+          <span class="copy-de">FORMEN</span>
+          <span class="copy-en">FORM</span>
+        </h3>
+        <p>
+          <span class="copy-de">Skizze, Volumen, Korrektur, schlechte Idee, bessere Form.</span>
+          <span class="copy-en">Sketch, volume, correction, poor idea, better form.</span>
+        </p>
+      </li>
+      <li>
+        <span>03</span>
+        <h3>
+          <span class="copy-de">FERTIGMACHEN</span>
+          <span class="copy-en">FINISH</span>
+        </h3>
+        <p>
+          <span class="copy-de">Farbe, Oberfläche und genau die richtige Menge Übermut.</span>
+          <span class="copy-en">Colour, surface and precisely the right amount of nerve.</span>
+        </p>
+      </li>
+      <li>
+        <span>04</span>
+        <h3>
+          <span class="copy-de">FREILASSEN</span>
+          <span class="copy-en">RELEASE</span>
+        </h3>
+        <p>
+          <span class="copy-de">Das Objekt sucht einen Ort mit Rückgrat.</span>
+          <span class="copy-en">The object looks for a place with backbone.</span>
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="about-cta">
+    <p class="serif-intro">
+      <span class="copy-de">Genug Theorie.<br />Sieh dir die Verdächtigen an.</span>
+      <span class="copy-en">Enough theory.<br />See the suspects.</span>
+    </p>
+    <a class="button" href={`${base}/objects`}>
+      <span class="copy-de">ZU DEN OBJEKTEN</span>
+      <span class="copy-en">SEE THE OBJECTS</span>
+      <i>↗</i>
+    </a>
+  </section>
+</Base>

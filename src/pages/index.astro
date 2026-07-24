@@ -1,0 +1,172 @@
+---
+import Base from '../layouts/Base.astro';
+import SculptureObject from '../components/SculptureObject.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getSculptures, getEvents } from '../lib/sanity';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const sculptures = await getSculptures();
+const events = await getEvents();
+const parade = sculptures.filter((item) => item.featured).slice(0, 5);
+const selection = sculptures.filter((item) => item.featured).slice(0, 6);
+const first = parade[0];
+---
+
+<Base route="/" title="dickheads — SAKAT × KINAM">
+  <section class="home-hero">
+    <div class="home-hero-copy">
+      <p class="hero-credit">SAKAT × KINAM / BERLIN</p>
+      <p class="hero-definition">
+        <span class="copy-de">SKULPTURALE SATIRE FÜR MENSCHEN<br />MIT AUGEN, REGALEN UND PROBLEMEN.</span>
+        <span class="copy-en">SCULPTURAL SATIRE FOR PEOPLE<br />WITH EYES, SHELVES AND PROBLEMS.</span>
+      </p>
+    </div>
+
+    <h1 class="home-wordmark" aria-label="dickheads">
+      <span>dick</span><span>heads<i>.</i></span>
+    </h1>
+
+    <div class="parade-shell" data-parade>
+      <div class="parade-list">
+        {parade.map((item, index) => (
+          <a
+            class:list={['parade-item', index === 0 && 'is-active']}
+            href={`${base}/object/${item.slug}`}
+            data-parade-item
+            data-title={item.title}
+            data-code={item.code}
+            data-summary-de={item.summaryDe}
+            data-summary-en={item.summaryEn}
+            style={`--parade-index:${index};--object:${item.colour};`}
+          >
+            <SculptureObject item={item} mode="parade" eager={index === 0} />
+            <span class="parade-name">{item.title}</span>
+          </a>
+        ))}
+      </div>
+
+      <div class="parade-info" aria-live="polite">
+        <small data-parade-code>{first.code}</small>
+        <h2 data-parade-title>{first.title}</h2>
+        <p>
+          <span class="copy-de" data-parade-summary-de>{first.summaryDe}</span>
+          <span class="copy-en" data-parade-summary-en>{first.summaryEn}</span>
+        </p>
+        <span class="parade-instruction">
+          <span class="copy-de">AUSWÄHLEN / ANKLICKEN</span>
+          <span class="copy-en">SELECT / CLICK</span>
+        </span>
+      </div>
+    </div>
+
+    <a class="hero-scroll" href="#statement">
+      <span class="copy-de">RUNTER ZUR SACHE</span>
+      <span class="copy-en">DOWN TO BUSINESS</span>
+      <i>↓</i>
+    </a>
+  </section>
+
+  <div class="moving-line" aria-hidden="true">
+    <div>
+      <span>OBJECTS WITH POOR JUDGEMENT</span>
+      <i>✦</i>
+      <span>SAKAT × KINAM</span>
+      <i>✦</i>
+      <span>BERLIN, UNFORTUNATELY</span>
+      <i>✦</i>
+      <span>INQUIRE, DON'T ADD TO CART</span>
+      <i>✦</i>
+      <span>OBJECTS WITH POOR JUDGEMENT</span>
+      <i>✦</i>
+      <span>SAKAT × KINAM</span>
+    </div>
+  </div>
+
+  <section class="home-statement" id="statement">
+    <div class="eyebrow">
+      <span class="copy-de">EIN KURZES STATEMENT</span>
+      <span class="copy-en">A BRIEF STATEMENT</span>
+    </div>
+    <div class="statement-grid">
+      <h2>
+        <span class="copy-de">KUNST MUSS NICHT<br />BRAV IM REGAL SITZEN.</span>
+        <span class="copy-en">ART DOES NOT HAVE TO<br />BEHAVE ON THE SHELF.</span>
+      </h2>
+      <div>
+        <p class="serif-intro">
+          <span class="copy-de">Wir bauen Figuren zwischen Skulptur, Satire und schlechter Erziehung.</span>
+          <span class="copy-en">We make figures somewhere between sculpture, satire and poor upbringing.</span>
+        </p>
+        <p class="statement-body">
+          <span class="copy-de">Entworfen, gefertigt und bemalt in Berlin. Jede Arbeit bekommt genau so viel Ernst, wie sie aushält. Preise nennen wir im Gespräch. Versand bleibt fair.</span>
+          <span class="copy-en">Designed, made and painted in Berlin. Every work receives exactly as much seriousness as it can handle. Prices are discussed directly. Shipping stays fair.</span>
+        </p>
+        <a class="text-link" href={`${base}/about`}>
+          <span class="copy-de">MEHR ÜBER SAKAT & KINAM</span>
+          <span class="copy-en">MORE ABOUT SAKAT & KINAM</span>
+          <i>↗</i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-selection">
+    <header class="section-head">
+      <div>
+        <div class="eyebrow">
+          <span class="copy-de">AUSGEWÄHLTE OBJEKTE</span>
+          <span class="copy-en">SELECTED OBJECTS</span>
+        </div>
+        <h2>
+          <span class="copy-de">DIE AKTUELLE<br />BESCHWERDELAGE.</span>
+          <span class="copy-en">THE CURRENT<br />SITUATION.</span>
+        </h2>
+      </div>
+      <a class="text-link" href={`${base}/objects`}>
+        <span class="copy-de">ALLE 30 ANSEHEN</span>
+        <span class="copy-en">VIEW ALL 30</span>
+        <i>↗</i>
+      </a>
+    </header>
+    <div class="featured-grid">
+      {selection.map((item, index) => (
+        <ProductCard item={item} index={index} featured={index === 0 || index === 3} />
+      ))}
+    </div>
+  </section>
+
+  <section class="home-break">
+    <p>
+      <span class="copy-de">„SIEHT AUS WIE EIN WITZ.<br />STEHT DA WIE EIN ARGUMENT.“</span>
+      <span class="copy-en">“LOOKS LIKE A JOKE.<br />STANDS LIKE AN ARGUMENT.”</span>
+    </p>
+    <span>— FIELD NOTE / 02</span>
+    <div class="break-disc" aria-hidden="true"><i>D</i><i>H</i></div>
+  </section>
+
+  <section class="home-events">
+    <header>
+      <div class="eyebrow">EVENTS / BERLIN</div>
+      <h2>
+        <span class="copy-de">WIR TAUCHEN AUF,<br />WENN ES SICH LOHNT.</span>
+        <span class="copy-en">WE SHOW UP<br />WHEN IT IS WORTH IT.</span>
+      </h2>
+    </header>
+    <div class="event-preview-list">
+      {events.map((event, index) => (
+        <a href={event.link ? `${base}${event.link}` : `${base}/events`} class="event-preview">
+          <span>{String(index + 1).padStart(2, '0')}</span>
+          <div>
+            <h3>{event.title}</h3>
+            <p>{event.venue}</p>
+          </div>
+          <strong>
+            <span class="copy-de">{event.dateLabelDe}</span>
+            <span class="copy-en">{event.dateLabelEn}</span>
+          </strong>
+          <i>↗</i>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

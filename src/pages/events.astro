@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import { getEvents } from '../lib/sanity';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const events = await getEvents();
+---
+
+<Base
+  route="/events"
+  title="Events — dickheads"
+  description="Occasional exhibitions, pop-ups and studio visits by dickheads."
+>
+  <section class="page-head events-head">
+    <div class="page-head-copy">
+      <div class="eyebrow">POP-UPS / EXHIBITIONS / STUDIO</div>
+      <h1 class="display-title">EVENTS</h1>
+      <p class="serif-intro">
+        <span class="copy-de">Kein Monatsprogramm. Nur gute Gründe, das Haus zu verlassen.</span>
+        <span class="copy-en">No monthly programme. Only good reasons to leave the house.</span>
+      </p>
+    </div>
+    <div class="page-head-aside event-clock">
+      <strong data-chaos-clock>NOW</strong>
+      <p>
+        <span class="copy-de">BERLINER ZEIT / ANGABEN OHNE GEWÄHR UND OHNE EILE.</span>
+        <span class="copy-en">BERLIN TIME / GIVEN WITHOUT WARRANTY OR URGENCY.</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="events-list">
+    {events.map((event, index) => (
+      <article class:list={['event-row', `event-row--${event.status}`]}>
+        <div class="event-number">{String(index + 1).padStart(2, '0')}</div>
+        <div class="event-date">
+          <span class="copy-de">{event.dateLabelDe}</span>
+          <span class="copy-en">{event.dateLabelEn}</span>
+        </div>
+        <div class="event-main">
+          <p>{event.venue}</p>
+          <h2>{event.title}</h2>
+          <div>
+            <span class="copy-de">{event.textDe}</span>
+            <span class="copy-en">{event.textEn}</span>
+          </div>
+        </div>
+        <a href={event.link ? `${base}${event.link}` : `${base}/inquire?subject=events`}>
+          <span class="copy-de">{event.status === 'request' ? 'BESUCH ANFRAGEN' : 'BENACHRICHTIGEN'}</span>
+          <span class="copy-en">{event.status === 'request' ? 'REQUEST A VISIT' : 'KEEP ME POSTED'}</span>
+          <i>↗</i>
+        </a>
+      </article>
+    ))}
+  </section>
+
+  <section class="event-bottom">
+    <p>
+      <span class="copy-de">EIN ORT? EINE WAND? EIN SONDERBARER ANLASS?</span>
+      <span class="copy-en">A SPACE? A WALL? A PECULIAR OCCASION?</span>
+    </p>
+    <h2>
+      <span class="copy-de">LAD UNS EIN.<br />WIR ÜBERLEGEN ES UNS.</span>
+      <span class="copy-en">INVITE US.<br />WE'LL THINK ABOUT IT.</span>
+    </h2>
+    <a class="button button--pink" href={`${base}/inquire?subject=collaboration`}>
+      <span class="copy-de">EVENT / KOOPERATION ANFRAGEN</span>
+      <span class="copy-en">EVENT / COLLABORATION INQUIRY</span>
+      <i>↗</i>
+    </a>
+  </section>
+</Base>

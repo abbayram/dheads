@@ -1,0 +1,143 @@
+---
+import '../styles/global.css';
+
+const {
+  title = 'dickheads — sculptural satire by SAKAT & KINAM',
+  description = 'Sculptural satire from Berlin. Objects by SAKAT & KINAM.',
+  route = '/',
+  image
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const canonical = new URL(`${base}${route === '/' ? '/' : route}`, Astro.site);
+const nav = [
+  { href: `${base}/objects`, de: 'Objekte', en: 'Objects', no: '01' },
+  { href: `${base}/events`, de: 'Ereignisse', en: 'Events', no: '02' },
+  { href: `${base}/about`, de: 'Über', en: 'About', no: '03' },
+  { href: `${base}/inquire`, de: 'Anfragen', en: 'Inquire', no: '04' }
+];
+---
+
+<!doctype html>
+<html lang="de" data-lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2b2b2b" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {image && <meta property="og:image" content={image} />}
+    <title>{title}</title>
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('dickheads-lang');
+        if (saved === 'en' || saved === 'de') {
+          document.documentElement.dataset.lang = saved;
+          document.documentElement.lang = saved;
+        }
+      } catch {}
+    </script>
+  </head>
+  <body data-base={base} data-route={route}>
+    <a class="skip-link" href="#content">
+      <span class="copy-de">Zum Inhalt</span>
+      <span class="copy-en">Skip to content</span>
+    </a>
+
+    <div class="pointer-glow" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"><span>VIEW</span></div>
+    <div class="page-wipe" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <button class="menu-trigger magnetic" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span class="menu-symbol" aria-hidden="true"><i></i><i></i></span>
+        <span>MENU</span>
+      </button>
+
+      <a class="site-mark magnetic" href={`${base}/`} aria-label="dickheads home">
+        dickheads<span class="mark-dot">.</span>
+      </a>
+
+      <div class="header-tools">
+        <button class="lang-toggle magnetic" type="button" aria-label="Change language">
+          <span data-lang-label>DE</span><i>/</i><span>EN</span>
+        </button>
+        <a class="header-inquire magnetic" href={`${base}/inquire`}>
+          <span class="copy-de">ANFRAGEN</span>
+          <span class="copy-en">INQUIRE</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="nav-overlay" id="site-navigation" aria-hidden="true">
+      <div class="nav-art" aria-hidden="true">
+        <span>D</span><span>H</span>
+      </div>
+      <nav aria-label="Main navigation">
+        <ol>
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} data-nav-link>
+                <small>{item.no}</small>
+                <span class="copy-de">{item.de}</span>
+                <span class="copy-en">{item.en}</span>
+                <i>↗</i>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <div class="nav-bottom">
+        <p>SAKAT × KINAM / BERLIN</p>
+        <a href={`${base}/imprint`}>
+          <span class="copy-de">IMPRESSUM</span>
+          <span class="copy-en">IMPRINT</span>
+        </a>
+      </div>
+    </div>
+
+    <main id="content">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-word">dickheads<span>.</span></div>
+      <div class="footer-grid">
+        <p>
+          <span class="copy-de">SKULPTURALE SATIRE AUS BERLIN.<br />VON SAKAT & KINAM.</span>
+          <span class="copy-en">SCULPTURAL SATIRE FROM BERLIN.<br />BY SAKAT & KINAM.</span>
+        </p>
+        <div>
+          <a href={`${base}/objects`}>
+            <span class="copy-de">OBJEKTE</span>
+            <span class="copy-en">OBJECTS</span>
+          </a>
+          <a href={`${base}/events`}>EVENTS</a>
+          <a href={`${base}/inquire`}>
+            <span class="copy-de">ANFRAGEN</span>
+            <span class="copy-en">INQUIRE</span>
+          </a>
+        </div>
+        <div>
+          <a href="https://instagram.com/" rel="noreferrer">INSTAGRAM ↗</a>
+          <a href="mailto:studio@dickheads.shop">EMAIL ↗</a>
+          <a href={`${base}/imprint`}>
+            <span class="copy-de">IMPRESSUM</span>
+            <span class="copy-en">IMPRINT</span>
+          </a>
+        </div>
+        <p class="footer-note">
+          © {new Date().getFullYear()} DICKHEADS<br />
+          <span class="copy-de">PREISE AUF ANFRAGE.<br />VERNÜNFTIGER VERSAND.</span>
+          <span class="copy-en">PRICES ON REQUEST.<br />REASONABLE SHIPPING.</span>
+        </p>
+      </div>
+    </footer>
+
+    <script is:inline src={`${base}/script.js`}></script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import { getSculptures } from '../lib/sanity';
+
+const sculptures = await getSculptures();
+---
+
+<Base
+  route="/inquire"
+  title="Inquire — dickheads"
+  description="Ask about an object, a studio visit or a collaboration."
+>
+  <section class="inquire-page">
+    <header>
+      <div class="eyebrow">
+        <span class="copy-de">KEIN WARENKORB / EIN GESPRÄCH</span>
+        <span class="copy-en">NO CART / A CONVERSATION</span>
+      </div>
+      <h1>
+        <span class="copy-de">FRAG<br />ANSTÄNDIG.</span>
+        <span class="copy-en">ASK<br />NICELY.</span>
+      </h1>
+      <p class="serif-intro">
+        <span class="copy-de">Du bekommst Preis, Verfügbarkeit und Versand direkt von uns. Ohne Bot. Leider mit Menschen.</span>
+        <span class="copy-en">You get price, availability and shipping directly from us. No bot. Humans, unfortunately.</span>
+      </p>
+    </header>
+
+    <form class="inquiry-form" data-inquiry-form novalidate>
+      <div class="form-row form-row--wide">
+        <label for="subject">
+          01 /
+          <span class="copy-de">WORUM GEHT ES?</span>
+          <span class="copy-en">WHAT IS THIS ABOUT?</span>
+        </label>
+        <select id="subject" name="subject" required>
+          <option value="object">
+            OBJEKT / OBJECT
+          </option>
+          <option value="studio-visit">
+            STUDIO VISIT
+          </option>
+          <option value="events">
+            EVENT / EXHIBITION
+          </option>
+          <option value="collaboration">
+            COLLABORATION
+          </option>
+          <option value="other">
+            ETWAS ANDERES / SOMETHING ELSE
+          </option>
+        </select>
+      </div>
+
+      <div class="form-row form-row--wide">
+        <label for="object">
+          02 /
+          <span class="copy-de">WELCHES OBJEKT?</span>
+          <span class="copy-en">WHICH OBJECT?</span>
+        </label>
+        <select id="object" name="object">
+          <option value="">
+            NOCH KEINS / NONE YET
+          </option>
+          {sculptures.map((item) => (
+            <option value={item.slug}>{item.code} — {item.title}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="name">
+          03 /
+          <span class="copy-de">NAME</span>
+          <span class="copy-en">NAME</span>
+        </label>
+        <input id="name" name="name" type="text" autocomplete="name" required placeholder="YOUR NAME" />
+      </div>
+
+      <div class="form-row">
+        <label for="email">
+          04 /
+          <span class="copy-de">E-MAIL</span>
+          <span class="copy-en">EMAIL</span>
+        </label>
+        <input id="email" name="email" type="email" autocomplete="email" required placeholder="YOU@EXAMPLE.COM" />
+      </div>
+
+      <div class="form-row form-row--wide">
+        <label for="message">
+          05 /
+          <span class="copy-de">NACHRICHT</span>
+          <span class="copy-en">MESSAGE</span>
+        </label>
+        <textarea
+          id="message"
+          name="message"
+          required
+          rows="6"
+          placeholder="TELL US ENOUGH TO ANSWER PROPERLY."
+        ></textarea>
+      </div>
+
+      <div class="form-submit">
+        <p>
+          <span class="copy-de">DAS FORMULAR ÖFFNET DEIN MAILPROGRAMM. ANTWORT NORMALERWEISE PERSÖNLICH, NICHT SOFORT.</span>
+          <span class="copy-en">THE FORM OPENS YOUR EMAIL APP. REPLIES ARE PERSONAL, NOT INSTANT.</span>
+        </p>
+        <button type="submit">
+          <span class="copy-de">ANFRAGE VORBEREITEN</span>
+          <span class="copy-en">PREPARE INQUIRY</span>
+          <i>↗</i>
+        </button>
+      </div>
+      <div class="form-message" data-form-message role="status"></div>
+    </form>
+  </section>
+</Base>

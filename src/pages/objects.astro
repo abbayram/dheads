@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getSculptures } from '../lib/sanity';
+
+const sculptures = await getSculptures();
+const available = sculptures.filter((item) => item.status === 'available').length;
+---
+
+<Base
+  route="/objects"
+  title="Objects — dickheads"
+  description="Thirty sculptural characters by SAKAT & KINAM. Inquiries open."
+>
+  <section class="page-head objects-head">
+    <div class="page-head-copy">
+      <div class="eyebrow">ARCHIVE / CURRENT / IN PROGRESS</div>
+      <h1 class="display-title">
+        <span class="copy-de">OBJEKTE</span>
+        <span class="copy-en">OBJECTS</span>
+      </h1>
+      <p class="serif-intro">
+        <span class="copy-de">Dreißig Figuren. Noch keine Anzeichen, dass wir vernünftig werden.</span>
+        <span class="copy-en">Thirty figures. Still no sign of us becoming reasonable.</span>
+      </p>
+    </div>
+    <div class="page-head-aside">
+      <strong>30<span>+</span></strong>
+      <p>
+        <span class="copy-de">{available} ANFRAGEN OFFEN / NEUE ARBEITEN ENTSTEHEN LAUFEND.</span>
+        <span class="copy-en">{available} INQUIRIES OPEN / NEW WORK KEEPS APPEARING.</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="catalogue" data-catalogue>
+    <div class="catalogue-tools">
+      <div class="filter-set" role="group" aria-label="Filter objects">
+        <button type="button" class="is-active" data-filter="all">
+          <span class="copy-de">ALLE</span><span class="copy-en">ALL</span>
+          <sup>{sculptures.length}</sup>
+        </button>
+        <button type="button" data-filter="available">
+          <span class="copy-de">ANFRAGE OFFEN</span><span class="copy-en">INQUIRY OPEN</span>
+          <sup>{available}</sup>
+        </button>
+        <button type="button" data-filter="acquired">
+          <span class="copy-de">VERGEBEN</span><span class="copy-en">ACQUIRED</span>
+          <sup>{sculptures.filter((item) => item.status === 'acquired').length}</sup>
+        </button>
+      </div>
+      <p>
+        <span class="copy-de">PREISE AUF ANFRAGE / WELTWEITER VERSAND</span>
+        <span class="copy-en">PRICES ON REQUEST / WORLDWIDE SHIPPING</span>
+      </p>
+    </div>
+
+    <div class="catalogue-grid">
+      {sculptures.map((item, index) => (
+        <div data-catalogue-item data-status={item.status}>
+          <ProductCard item={item} index={index} />
+        </div>
+      ))}
+    </div>
+
+    <p class="catalogue-empty" data-catalogue-empty hidden>
+      <span class="copy-de">NICHTS HIER. DAS IST AUSNAHMSWEISE KEIN KONZEPT.</span>
+      <span class="copy-en">NOTHING HERE. FOR ONCE, THIS IS NOT A CONCEPT.</span>
+    </p>
+  </section>
+</Base>

@@ -1,0 +1,188 @@
+---
+import Base from '../../layouts/Base.astro';
+import SculptureObject from '../../components/SculptureObject.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getSculptures } from '../../lib/sanity';
+import type { Sculpture } from '../../types';
+
+export async function getStaticPaths() {
+  const sculptures = await getSculptures();
+  return sculptures.map((item) => ({
+    params: { slug: item.slug },
+    props: { item, sculptures }
+  }));
+}
+
+interface Props {
+  item: Sculpture;
+  sculptures: Sculpture[];
+}
+
+const { item, sculptures } = Astro.props as Props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const related = sculptures
+  .filter((candidate) => candidate.slug !== item.slug)
+  .filter((candidate) => candidate.collection === item.collection)
+  .slice(0, 3);
+
+const statusDe: Record<Sculpture['status'], string> = {
+  available: 'ANFRAGE OFFEN',
+  held: 'VORÜBERGEHEND RESERVIERT',
+  acquired: 'VERGEBEN / ARCHIV'
+};
+
+const statusEn: Record<Sculpture['status'], string> = {
+  available: 'INQUIRY OPEN',
+  held: 'TEMPORARILY ON HOLD',
+  acquired: 'ACQUIRED / ARCHIVE'
+};
+
+const inquiryHref = `${base}/inquire?object=${encodeURIComponent(item.slug)}`;
+---
+
+<Base
+  route={`/object/${item.slug}`}
+  title={`${item.title} — dickheads`}
+  description={item.summaryEn}
+  image={item.mainImage}
+>
+  <article class="object-detail">
+    <section class="object-stage" data-detail-stage>
+      <div class="stage-topline">
+        <a href={`${base}/objects`}>
+          <span class="copy-de">← ALLE OBJEKTE</span>
+          <span class="copy-en">← ALL OBJECTS</span>
+        </a>
+        <span>{item.code} / {item.year}</span>
+      </div>
+
+      <SculptureObject item={item} mode="detail" showSlot={true} eager={true} />
+
+      <div class="stage-instruction">
+        <span>
+          <span class="copy-de">MAUS BEWEGEN / OBJEKT REAGIERT</span>
+          <span class="copy-en">MOVE POINTER / OBJECT RESPONDS</span>
+        </span>
+        <i>↔</i>
+      </div>
+    </section>
+
+    <section class="object-copy">
+      <div class="object-copy-inner">
+        <div class:list={['detail-status', `detail-status--${item.status}`]}>
+          <span class="copy-de">{statusDe[item.status]}</span>
+          <span class="copy-en">{statusEn[item.status]}</span>
+        </div>
+        <p class="object-collection">{item.collection}</p>
+        <h1>{item.title}</h1>
+        <p class="object-summary">
+          <span class="copy-de">{item.summaryDe}</span>
+          <span class="copy-en">{item.summaryEn}</span>
+        </p>
+
+        <div class="object-specs">
+          <div>
+            <span>
+              <span class="copy-de">JAHR</span>
+              <span class="copy-en">YEAR</span>
+            </span>
+            <strong>{item.year}</strong>
+          </div>
+          <div>
+            <span>
+              <span class="copy-de">MATERIAL</span>
+              <span class="copy-en">MATERIAL</span>
+            </span>
+            <strong>
+              <span class="copy-de">{item.materialDe}</span>
+              <span class="copy-en">{item.materialEn}</span>
+            </strong>
+          </div>
+          <div>
+            <span>
+              <span class="copy-de">MASSE</span>
+              <span class="copy-en">DIMENSIONS</span>
+            </span>
+            <strong>{item.dimensions}</strong>
+          </div>
+        </div>
+
+        <details open>
+          <summary>
+            <span class="copy-de">ZUM OBJEKT</span>
+            <span class="copy-en">ABOUT THE OBJECT</span>
+            <i>+</i>
+          </summary>
+          <p>
+            <span class="copy-de">{item.statementDe}</span>
+            <span class="copy-en">{item.statementEn}</span>
+          </p>
+        </details>
+        <details>
+          <summary>
+            <span class="copy-de">VERSAND</span>
+            <span class="copy-en">SHIPPING</span>
+            <i>+</i>
+          </summary>
+          <p>
+            <span class="copy-de">Sicher verpackt, versichert und ohne Fantasieaufschlag. Die genauen Kosten nennen wir in der Antwort.</span>
+            <span class="copy-en">Packed safely, insured and without an imaginary surcharge. Exact costs are included in our reply.</span>
+          </p>
+        </details>
+        <details>
+          <summary>
+            <span class="copy-de">PFLEGE</span>
+            <span class="copy-en">CARE</span>
+            <i>+</i>
+          </summary>
+          <p>
+            <span class="copy-de">Trocken abstauben. Nicht baden. Nicht mit politischem Amt betrauen.</span>
+            <span class="copy-en">Dust gently. Do not bathe. Do not appoint to public office.</span>
+          </p>
+        </details>
+
+        {item.status === 'available' ? (
+          <a class="object-cta" href={inquiryHref}>
+            <span>
+              <span class="copy-de">DIESES OBJEKT ANFRAGEN</span>
+              <span class="copy-en">INQUIRE ABOUT THIS OBJECT</span>
+            </span>
+            <i>↗</i>
+          </a>
+        ) : (
+          <a class="object-cta object-cta--secondary" href={`${base}/objects`}>
+            <span>
+              <span class="copy-de">VERFÜGBARE OBJEKTE ANSEHEN</span>
+              <span class="copy-en">VIEW AVAILABLE OBJECTS</span>
+            </span>
+            <i>↗</i>
+          </a>
+        )}
+        <p class="price-note">
+          <span class="copy-de">PREIS AUF ANFRAGE / PERSÖNLICHE ANTWORT</span>
+          <span class="copy-en">PRICE ON REQUEST / PERSONAL REPLY</span>
+        </p>
+      </div>
+    </section>
+  </article>
+
+  <section class="related-objects">
+    <header class="section-head">
+      <div>
+        <div class="eyebrow">
+          <span class="copy-de">MEHR SCHLECHTER EINFLUSS</span>
+          <span class="copy-en">MORE BAD INFLUENCE</span>
+        </div>
+        <h2>
+          <span class="copy-de">KÖNNTE AUCH<br />HERUMSTEHEN.</span>
+          <span class="copy-en">COULD ALSO<br />STAND AROUND.</span>
+        </h2>
+      </div>
+    </header>
+    <div class="related-grid">
+      {related.map((candidate, index) => (
+        <ProductCard item={candidate} index={index} />
+      ))}
+    </div>
+  </section>
+</Base>
