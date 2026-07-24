@@ -662,6 +662,24 @@ main {
   transition: transform 0.7s var(--ease-out);
 }
 
+.object-model {
+  position: absolute;
+  z-index: 3;
+  inset: 2% 5% 5%;
+  width: 90%;
+  height: 90%;
+  overflow: hidden;
+  background: transparent;
+  --poster-color: transparent;
+  filter: drop-shadow(0 32px 18px rgba(43, 43, 43, 0.22));
+  transition: transform 0.7s var(--ease-out), filter 0.7s var(--ease-out);
+}
+
+.sculpture-object:hover .object-model {
+  transform: translateY(-8px) scale(1.025);
+  filter: drop-shadow(0 42px 22px rgba(43, 43, 43, 0.3));
+}
+
 .object-form {
   position: relative;
   z-index: 2;
@@ -1883,6 +1901,12 @@ main {
 .object-stage .object-form {
   width: min(35%, 340px);
   height: 76%;
+}
+
+.object-stage .object-model {
+  inset: 1% 5% 4%;
+  width: 90%;
+  height: 92%;
 }
 
 .object-stage .object-shadow {

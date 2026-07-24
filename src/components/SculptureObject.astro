@@ -8,6 +8,8 @@ const {
 } = Astro.props;
 
 const style = `--object:${item.colour};--object-accent:${item.accent};--object-seed:${item.variant};`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const modelSrc = item.modelUrl?.startsWith('/') ? `${base}${item.modelUrl}` : item.modelUrl;
 ---
 
 <div
@@ -18,7 +20,20 @@ const style = `--object:${item.colour};--object-accent:${item.accent};--object-s
 >
   <div class="object-shadow" aria-hidden="true"></div>
 
-  {item.mainImage ? (
+  {modelSrc && mode === 'detail' ? (
+    <model-viewer
+      class="object-model"
+      src={modelSrc}
+      alt={item.title}
+      camera-controls
+      auto-rotate
+      rotation-per-second="18deg"
+      shadow-intensity="0.7"
+      exposure="1.05"
+      interaction-prompt="none"
+      loading={eager ? 'eager' : 'lazy'}
+    ></model-viewer>
+  ) : item.mainImage ? (
     <img
       class="object-photo"
       src={item.mainImage}
@@ -52,7 +67,7 @@ const style = `--object:${item.colour};--object-accent:${item.accent};--object-s
     <span class:list={['model-slot', item.modelUrl && 'model-slot--ready']}>
       <span>GLB / 3D</span>
       <strong>
-        {item.modelUrl ? (
+        {modelSrc ? (
           <>
             <span class="copy-de">SCAN GELADEN</span>
             <span class="copy-en">SCAN LOADED</span>

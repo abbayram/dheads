@@ -1,15 +1,15 @@
 const names = [
-  ['herr-niemand', 'Herr Niemand'],
-  ['pink-slip', 'Pink Slip'],
-  ['soft-power', 'Soft Power'],
+  ['kinkdick', 'Kinkdick'],
+  ['the-dick-2', 'The Dick 2'],
+  ['balerina-dicktator', 'Balerina Dicktator'],
   ['kapitalfehler', 'Kapitalfehler'],
   ['morning-glory', 'Morning Glory'],
   ['vater-staat', 'Vater Staat'],
-  ['the-diplomat', 'The Diplomat'],
+  ['brain', 'Brain'],
   ['ego-trip', 'Ego Trip'],
   ['besserwisser', 'Besserwisser'],
   ['saint-maybe', 'Saint Maybe'],
-  ['big-feelings', 'Big Feelings'],
+  ['statua-twerk', 'Statua Twerk'],
   ['steuerklasse-eins', 'Steuerklasse I'],
   ['no-comment', 'No Comment'],
   ['late-checkout', 'Late Checkout'],
@@ -154,7 +154,13 @@ export const fallbackSculptures = names.map(([slug, title], index) => {
     featured: [1, 2, 3, 7, 11, 18].includes(number),
     images: [],
     mainImage: null,
-    modelUrl: null
+    modelUrl: {
+      kinkdick: '/models/kinkdick.glb',
+      'the-dick-2': '/models/the-dick-2.glb',
+      'balerina-dicktator': '/models/balerina-dicktator.glb',
+      brain: '/models/brain.glb',
+      'statua-twerk': '/models/statua-twerk.glb'
+    }[slug] || null
   };
 });
 
