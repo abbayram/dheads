@@ -60,3 +60,5 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+# Deployment trigger for uploaded sculpture models.
