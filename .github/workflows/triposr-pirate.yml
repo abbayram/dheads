@@ -23,14 +23,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Add swap for CPU inference
-        run: |
-          sudo fallocate -l 8G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          free -h
-
       - name: Decode pirate input
         run: |
           mkdir -p triposr-build/input
@@ -58,8 +50,8 @@ jobs:
           python run.py ../input/pirate_tpose_front.jpg \
             --device cpu \
             --no-remove-bg \
-            --mc-resolution 128 \
-            --chunk-size 1024 \
+            --mc-resolution 96 \
+            --chunk-size 512 \
             --output-dir ../output \
             --model-save-format glb
           cp ../output/0/mesh.glb ../pirate_triposr.glb
