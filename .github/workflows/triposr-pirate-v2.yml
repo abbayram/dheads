@@ -26,7 +26,18 @@ jobs:
       - name: Decode isolated pirate image
         run: |
           mkdir -p triposr-v2/input
-          base64 --decode triposr-v2/pirate_front.b64 > triposr-v2/input/pirate_front.jpg
+          python - <<'PY'
+          import base64, re
+          from pathlib import Path
+          source = Path('triposr-v2/pirate_front.b64').read_text()
+          clean = re.sub(r'[^A-Za-z0-9+/=]', '', source)
+          clean += '=' * ((4 - len(clean) % 4) % 4)
+          data = base64.b64decode(clean, validate=False)
+          if not data.startswith(b'\xff\xd8') or not data.endswith(b'\xff\xd9'):
+              raise SystemExit(f'Invalid JPEG after decode: {len(data)} bytes')
+          Path('triposr-v2/input/pirate_front.jpg').write_bytes(data)
+          print(f'Decoded JPEG: {len(data)} bytes')
+          PY
           file triposr-v2/input/pirate_front.jpg
 
       - name: Install TripoSR
