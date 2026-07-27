@@ -1,0 +1,75 @@
+name: Build Pirate v2 with TripoSR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "triposr-v2/**"
+      - ".github/workflows/triposr-pirate-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Decode isolated pirate image
+        run: |
+          mkdir -p triposr-v2/input
+          base64 --decode triposr-v2/pirate_front.b64 > triposr-v2/input/pirate_front.jpg
+          file triposr-v2/input/pirate_front.jpg
+
+      - name: Install TripoSR
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgl1 libglib2.0-0
+          git clone --depth 1 https://github.com/VAST-AI-Research/TripoSR.git triposr-v2/TripoSR
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.1.2 torchvision==0.16.2
+          python -m pip install numpy==1.26.4
+          python -m pip install \
+            omegaconf==2.3.0 Pillow==10.1.0 einops==0.7.0 \
+            transformers==4.35.0 trimesh==4.0.5 rembg==2.0.57 \
+            huggingface-hub==0.20.3 "imageio[ffmpeg]" \
+            xatlas==0.0.9 moderngl==5.10.0
+          python -m pip install git+https://github.com/tatsy/torchmcubes.git
+
+      - name: Generate isolated GLB
+        run: |
+          cd triposr-v2/TripoSR
+          python run.py ../input/pirate_front.jpg \
+            --device cpu \
+            --foreground-ratio 0.92 \
+            --mc-resolution 256 \
+            --chunk-size 1024 \
+            --output-dir ../output \
+            --model-save-format glb
+          cp ../output/0/mesh.glb ../pirate_triposr_v2.glb
+          python - <<'PY'
+          import trimesh
+          obj = trimesh.load('../pirate_triposr_v2.glb', force='scene')
+          meshes = [g for g in obj.geometry.values() if hasattr(g, 'vertices')]
+          verts = sum(len(m.vertices) for m in meshes)
+          faces = sum(len(m.faces) for m in meshes)
+          print(f'meshes={len(meshes)} vertices={verts} faces={faces}')
+          if verts < 1000 or faces < 1000:
+              raise SystemExit('Mesh validation failed: too little geometry')
+          PY
+
+      - name: Upload corrected pirate GLB
+        uses: actions/upload-artifact@v4
+        with:
+          name: pirate-triposr-v2-glb
+          path: triposr-v2/pirate_triposr_v2.glb
+          if-no-files-found: error
+          retention-days: 7
