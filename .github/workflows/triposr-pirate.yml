@@ -13,7 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    timeout-minutes: 180
+    timeout-minutes: 60
     steps:
       - name: Checkout build branch
         uses: actions/checkout@v4
@@ -21,50 +21,55 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Decode pirate input
         run: |
-          mkdir -p triposr-build/input
+          mkdir -p triposr-build/input triposr-build/output
           base64 --decode triposr-build/pirate_tpose_front.b64 > triposr-build/input/pirate_tpose_front.jpg
           file triposr-build/input/pirate_tpose_front.jpg
 
-      - name: Install TripoSR
+      - name: Generate GLB using official TripoSR Space
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libgl1 libglib2.0-0
-          git clone --depth 1 https://github.com/VAST-AI-Research/TripoSR.git triposr-build/TripoSR
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.1.2 torchvision==0.16.2
-          python -m pip install numpy==1.26.4
-          python -m pip install \
-            omegaconf==2.3.0 Pillow==10.1.0 einops==0.7.0 \
-            transformers==4.35.0 trimesh==4.0.5 rembg==2.0.57 \
-            huggingface-hub==0.20.3 "imageio[ffmpeg]" \
-            xatlas==0.0.9 moderngl==5.10.0
-          python -m pip install git+https://github.com/tatsy/torchmcubes.git
-
-      - name: Generate GLB with TripoSR
-        run: |
-          cd triposr-build/TripoSR
-          python run.py ../input/pirate_tpose_front.jpg \
-            --device cpu \
-            --no-remove-bg \
-            --mc-resolution 96 \
-            --chunk-size 512 \
-            --output-dir ../output \
-            --model-save-format glb
-          cp ../output/0/mesh.glb ../pirate_triposr.glb
+          python -m pip install --upgrade pip gradio_client
           python - <<'PY'
-          import trimesh
-          mesh = trimesh.load('../pirate_triposr.glb', force='mesh')
-          print(f'vertices={len(mesh.vertices)} faces={len(mesh.faces)} watertight={mesh.is_watertight}')
+          from pathlib import Path
+          import shutil
+          from gradio_client import Client, handle_file
+
+          image = Path('triposr-build/input/pirate_tpose_front.jpg').resolve()
+          output = Path('triposr-build/output/pirate_triposr.glb').resolve()
+
+          client = Client('stabilityai/TripoSR')
+          print(client.view_api())
+
+          processed = client.predict(
+              handle_file(str(image)),
+              False,
+              0.85,
+              api_name='/preprocess',
+          )
+          processed_input = handle_file(processed) if isinstance(processed, str) else processed
+          result = client.predict(
+              processed_input,
+              96,
+              api_name='/generate',
+          )
+          print('TripoSR result:', result)
+
+          glb = result[1] if isinstance(result, (tuple, list)) else result
+          if isinstance(glb, dict):
+              glb = glb.get('path') or glb.get('name')
+          if not glb:
+              raise RuntimeError(f'No GLB path returned: {result!r}')
+          shutil.copyfile(glb, output)
+          print('Saved:', output, output.stat().st_size, 'bytes')
           PY
 
       - name: Upload pirate GLB
         uses: actions/upload-artifact@v4
         with:
           name: pirate-triposr-glb
-          path: triposr-build/pirate_triposr.glb
+          path: triposr-build/output/pirate_triposr.glb
           if-no-files-found: error
           retention-days: 7
